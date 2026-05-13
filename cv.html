@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV — Bouziane Samir · Data Analyst & BI Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:  #1a1a18;
+      --green: #1D9E75;
+      --bg:    #f5f4f0;
+      --white: #ffffff;
+      --muted: #6b7280;
+      --border:#e5e7eb;
+    }
+
+    body {
+      font-family: 'Sora', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 52px;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 100;
+      gap: 1rem;
+    }
+    .toolbar-left { display: flex; align-items: center; gap: 1rem; }
+    .toolbar a.back {
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: .8rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      transition: color .2s;
+    }
+    .toolbar a.back:hover { color: var(--green); }
+    .toolbar-title { color: #fff; font-size: .85rem; font-weight: 600; }
+
+    .toolbar-right { display: flex; align-items: center; gap: .75rem; }
+
+    .lang-toggle {
+      display: flex;
+      background: rgba(255,255,255,.1);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .lang-btn {
+      padding: .3rem .75rem;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      font-family: 'Sora', sans-serif;
+      transition: all .2s;
+    }
+    .lang-btn.active { background: var(--green); color: #fff; }
+
+    .pdf-btn {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: .35rem 1rem;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      transition: opacity .2s;
+    }
+    .pdf-btn:hover { opacity: .85; }
+
+    /* ── Page wrapper ── */
+    .page-wrap {
+      margin-top: 52px;
+      padding: 2.5rem 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ── CV Sheet ── */
+    .cv {
+      width: 100%;
+      max-width: 860px;
+      background: var(--white);
+      box-shadow: 0 4px 40px rgba(0,0,0,.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .cv-header {
+      background: var(--dark);
+      padding: 2.5rem 2.5rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+    }
+    .cv-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+    }
+    .cv-name em { color: var(--green); font-style: italic; }
+    .cv-title {
+      font-size: .95rem;
+      font-weight: 500;
+      color: #9ca3af;
+      margin-top: .5rem;
+      letter-spacing: .02em;
+    }
+    .cv-title strong { color: var(--green); font-weight: 600; }
+    .cv-tagline {
+      font-size: .8rem;
+      color: rgba(255,255,255,.4);
+      margin-top: .75rem;
+      font-style: italic;
+    }
+
+    .cv-contacts {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      text-align: right;
+    }
+    .cv-contacts a, .cv-contacts span {
+      font-size: .78rem;
+      color: #9ca3af;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: .4rem;
+      transition: color .2s;
+    }
+    .cv-contacts a:hover { color: var(--green); }
+    .cv-contacts .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* ── Body ── */
+    .cv-body {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+    }
+
+    /* ── Sidebar ── */
+    .cv-sidebar {
+      background: #f9f9f7;
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+    }
+
+    /* ── Main ── */
+    .cv-main {
+      padding: 2rem 2.5rem;
+    }
+
+    /* ── Sections ── */
+    .cv-section { margin-bottom: 1.75rem; }
+    .cv-section:last-child { margin-bottom: 0; }
+
+    .section-label {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--green);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: .4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Skills */
+    .skill-item { margin-bottom: .85rem; }
+    .skill-name {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: .3rem;
+    }
+    .skill-name span { color: var(--muted); font-weight: 400; font-size: .72rem; }
+    .skill-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 2px;
+    }
+
+    /* Tags */
+    .tag-list { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .tag-item {
+      font-size: .72rem;
+      font-weight: 600;
+      background: var(--border);
+      color: var(--dark);
+      padding: .2rem .55rem;
+      border-radius: 4px;
+    }
+
+    /* Languages */
+    .lang-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .6rem;
+      font-size: .8rem;
+    }
+    .lang-item .lang-name { font-weight: 600; }
+    .lang-level {
+      font-size: .7rem;
+      color: var(--muted);
+      background: var(--border);
+      padding: .15rem .4rem;
+      border-radius: 4px;
+    }
+
+    /* Profile */
+    .profile-text {
+      font-size: .83rem;
+      color: #374151;
+      line-height: 1.7;
+    }
+
+    /* Projects */
+    .project-item { margin-bottom: 1.25rem; }
+    .project-item:last-child { margin-bottom: 0; }
+    .proj-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: .3rem;
+    }
+    .proj-name {
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .proj-link {
+      font-size: .7rem;
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .proj-link:hover { text-decoration: underline; }
+    .proj-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .3rem;
+      margin-bottom: .4rem;
+    }
+    .proj-tech {
+      font-size: .68rem;
+      font-weight: 600;
+      background: var(--dark);
+      color: #fff;
+      padding: .1rem .4rem;
+      border-radius: 3px;
+    }
+    .proj-desc {
+      font-size: .78rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .proj-kpis {
+      display: flex;
+      gap: 1rem;
+      margin-top: .4rem;
+    }
+    .proj-kpi {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+    .proj-kpi span { color: var(--muted); font-weight: 400; display: block; font-size: .68rem; }
+
+    /* Certifications */
+    .cert-item {
+      display: flex;
+      gap: .75rem;
+      margin-bottom: .75rem;
+      align-items: flex-start;
+    }
+    .cert-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .cert-body {}
+    .cert-name { font-size: .8rem; font-weight: 600; color: var(--dark); }
+    .cert-org  { font-size: .72rem; color: var(--muted); }
+
+    /* Experience entrepreneuriale */
+    .exp-item { margin-bottom: 1.25rem; }
+    .exp-item:last-child { margin-bottom: 0; }
+    .exp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: .2rem;
+    }
+    .exp-title { font-size: .88rem; font-weight: 700; color: var(--dark); }
+    .exp-period {
+      font-size: .7rem;
+      color: var(--muted);
+      white-space: nowrap;
+      background: var(--border);
+      padding: .1rem .4rem;
+      border-radius: 4px;
+    }
+    .exp-role { font-size: .78rem; color: var(--green); font-weight: 600; margin-bottom: .5rem; }
+    .exp-bullets { list-style: none; padding: 0; }
+    .exp-bullets li {
+      font-size: .78rem;
+      color: #374151;
+      line-height: 1.6;
+      padding-left: 1rem;
+      position: relative;
+      margin-bottom: .2rem;
+    }
+    .exp-bullets li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-size: .7rem;
+    }
+
+    /* Availability badge */
+    .avail-badge {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      background: #d1fae5;
+      color: #065f46;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: .4rem .75rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+    }
+    .avail-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .3; }
+    }
+
+    /* ── Print ── */
+    @media print {
+      .toolbar { display: none !important; }
+      .page-wrap { margin-top: 0; padding: 0; }
+      .cv { box-shadow: none; border-radius: 0; max-width: 100%; }
+      body { background: #fff; }
+      @page { margin: 0; size: A4; }
+    }
+
+    /* ── i18n ── */
+    [data-fr], [data-en] { display: none; }
+    body.lang-fr [data-fr] { display: revert; }
+    body.lang-en [data-en] { display: revert; }
+  </style>
+</head>
+
+<body class="lang-fr">
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <a href="index.html" class="back">← Portfolio</a>
+    <span class="toolbar-title">Bouziane Samir — CV</span>
+  </div>
+  <div class="toolbar-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="pdf-btn" onclick="window.print()">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+        <path d="M12 16l-4-4h3V4h2v8h3l-4 4zm-6 2h12v2H6v-2z" fill="currentColor"/>
+      </svg>
+      <span data-fr>Télécharger PDF</span>
+      <span data-en>Download PDF</span>
+    </button>
+  </div>
+</div>
+
+<div class="page-wrap">
+<div class="cv">
+
+  <!-- HEADER -->
+  <div class="cv-header">
+    <div>
+      <div class="cv-name">Bouziane <em>Samir</em></div>
+      <div class="cv-title">
+        <strong data-fr>Data Analyst</strong>
+        <strong data-en>Data Analyst</strong>
+        <span data-fr> · BI Developer · Cloud Architect</span>
+        <span data-en> · BI Developer · Cloud Architect</span>
+      </div>
+      <div class="cv-tagline">
+        <span data-fr>Transformer les données en décisions — Python · SQL · Tableau · Chart.js</span>
+        <span data-en>Turning data into decisions — Python · SQL · Tableau · Chart.js</span>
+      </div>
+    </div>
+    <div class="cv-contacts">
+      <a href="mailto:m.salahbouziane@gmail.com"><span class="dot"></span>m.salahbouziane@gmail.com</a>
+      <a href="https://linkedin.com/in/samir-bouziane-117172409" target="_blank"><span class="dot"></span>linkedin.com/in/samir-bouziane-117172409</a>
+      <a href="https://github.com/samir-data-cloud" target="_blank"><span class="dot"></span>github.com/samir-data-cloud</a>
+      <span><span class="dot"></span>France · Remote</span>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="cv-body">
+
+    <!-- SIDEBAR -->
+    <aside class="cv-sidebar">
+
+      <!-- Compétences techniques -->
+      <div class="cv-section">
+        <div class="section-label" data-fr>Compétences</div>
+        <div class="section-label" data-en>Skills</div>
+
+        <div class="skill-item">
+          <div class="skill-name">Python / Pandas <span data-fr>Expert</span><span data-en>Expert</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name">SQL <span data-fr>Avancé</span><span data-en>Advanced</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name">Tableau / Power BI <span data-fr>Confirmé</span><span data-en>Proficient</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name">Chart.js / HTML <span data-fr>Confirmé</span><span data-en>Proficient</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name">Business Analysis <span data-fr>Avancé</span><span data-en>Advanced</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-name">Cloud (AWS / GCP) <span data-fr>Interméd.</span><span data-en>Intermediate</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:60%"></div></div>
+        </div>
+      </div>
+
+      <!-- Outils -->
+      <div class="cv-section">
+        <div class="section-label" data-fr>Outils</div>
+        <div class="section-label" data-en>Tools</div>
+        <div class="tag-list">
+          <span class="tag-item">Pandas</span>
+          <span class="tag-item">NumPy</span>
+          <span class="tag-item">Matplotlib</span>
+          <span class="tag-item">SQLite</span>
+          <span class="tag-item">PostgreSQL</span>
+          <span class="tag-item">Git / GitHub</span>
+          <span class="tag-item">Jupyter</span>
+          <span class="tag-item">VS Code</span>
+          <span class="tag-item">Vercel</span>
+        </div>
+      </div>
+
+      <!-- Langues -->
+      <div class="cv-section">
+        <div class="section-label" data-fr>Langues</div>
+        <div class="section-label" data-en>Languages</div>
+        <div class="lang-item">
+          <span class="lang-name" data-fr>Français</span>
+          <span class="lang-name" data-en>French</span>
+          <span class="lang-level" data-fr>Natif</span>
+          <span class="lang-level" data-en>Native</span>
+        </div>
+        <div class="lang-item">
+          <span class="lang-name" data-fr>Anglais</span>
+          <span class="lang-name" data-en>English</span>
+          <span class="lang-level" data-fr>Professionnel</span>
+          <span class="lang-level" data-en>Professional</span>
+        </div>
+        <div class="lang-item">
+          <span class="lang-name" data-fr>Arabe</span>
+          <span class="lang-name" data-en>Arabic</span>
+          <span class="lang-level" data-fr>Courant</span>
+          <span class="lang-level" data-en>Fluent</span>
+        </div>
+      </div>
+
+      <!-- Disponibilité -->
+      <div class="avail-badge">
+        <span class="avail-dot"></span>
+        <span data-fr>Disponible — Freelance &amp; CDI</span>
+        <span data-en>Available — Freelance &amp; Full-time</span>
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="cv-main">
+
+      <!-- Profil -->
+      <div class="cv-section">
+        <div class="section-label" data-fr>Profil</div>
+        <div class="section-label" data-en>Profile</div>
+        <p class="profile-text" data-fr>
+          Data Analyst passionné par la transformation des données brutes en décisions à impact mesurable.
+          Spécialisé en Python, SQL et visualisation de données, je conçois des dashboards interactifs et des analyses
+          business actionnables. Mon expérience en gestion d'entreprises (SCI, holding, immobilier) me permet
+          d'aborder chaque analyse avec une réelle compréhension des enjeux financiers et opérationnels.
+        </p>
+        <p class="profile-text" data-en>
+          Data Analyst passionate about turning raw data into measurable business decisions.
+          Specialized in Python, SQL and data visualization, I build interactive dashboards and actionable analyses.
+          My background running companies (SCI, holding, real estate) gives me a genuine understanding
+          of financial and operational challenges — I don't just analyze data, I understand what's at stake.
+        </p>
+      </div>
+
+      <!-- Projets -->
+      <div class="cv-section">
+        <div class="section-label" data-fr>Projets Data — Portfolio</div>
+        <div class="section-label" data-en>Data Projects — Portfolio</div>
+
+        <!-- HR Attrition -->
+        <div class="project-item">
+          <div class="proj-header">
+            <div class="proj-name">HR Attrition Analysis</div>
+            <a href="https://github.com/samir-data-cloud/hr-attrition-analysis" target="_blank" class="proj-link">GitHub ↗</a>
+          </div>
+          <div class="proj-stack">
+            <span class="proj-tech">Python</span>
+            <span class="proj-tech">Pandas</span>
+            <span class="proj-tech">SQL</span>
+            <span class="proj-tech">Chart.js</span>
+          </div>
+          <p class="proj-desc" data-fr>
+            Analyse du turnover sur 1 470 employés. Identification des profils à risque (overtime ×2.0, salaire &lt;$3K).
+            Dashboard interactif avec 6 insights business. Impact estimé : $880K–$2.2M économisés/an.
+          </p>
+          <p class="proj-desc" data-en>
+            Attrition analysis on 1,470 employees. Identified high-risk profiles (overtime ×2.0, salary &lt;$3K).
+            Interactive dashboard with 6 business insights. Estimated impact: $880K–$2.2M saved/year.
+          </p>
+          <div class="proj-kpis">
+            <div class="proj-kpi">16.4% <span data-fr>Taux attrition</span><span data-en>Attrition rate</span></div>
+            <div class="proj-kpi">×2.0 <span data-fr>Impact overtime</span><span data-en>Overtime impact</span></div>
+            <div class="proj-kpi">$880K <span data-fr>Économies est.</span><span data-en>Est. savings</span></div>
+          </div>
+        </div>
+
+        <!-- E-Commerce Olist -->
+        <div class="project-item">
+          <div class="proj-header">
+            <div class="proj-name">E-Commerce Olist Analysis</div>
+            <a href="https://github.com/samir-data-cloud/ecommerce-data-analysis" target="_blank" class="proj-link">GitHub ↗</a>
+          </div>
+          <div class="proj-stack">
+            <span class="proj-tech">Python</span>
+            <span class="proj-tech">Pandas</span>
+            <span class="proj-tech">SQL</span>
+            <span class="proj-tech">Chart.js</span>
+          </div>
+          <p class="proj-desc" data-fr>
+            Analyse de 117 329 commandes e-commerce brésiliennes. Identification d'un taux de retard critique (63.5%).
+            Corrélation délai/satisfaction. Impact potentiel : R$800K–1.5M de CA récupérable.
+          </p>
+          <p class="proj-desc" data-en>
+            Analysis of 117,329 Brazilian e-commerce orders. Identified a critical delay rate (63.5%).
+            Delivery time vs satisfaction correlation. Potential impact: R$800K–1.5M recoverable revenue.
+          </p>
+          <div class="proj-kpis">
+            <div class="proj-kpi">R$14.1M <span data-fr>CA analysé</span><span data-en>Revenue analyzed</span></div>
+            <div class="proj-kpi">63.5% <span data-fr>Retards</span><span data-en>Late deliveries</span></div>
+            <div class="proj-kpi">4.03/5 <span data-fr>Score client</span><span data-en>Customer score</span></div>
+          </div>
+        </div>
+
+        <!-- Superstore -->
+        <div class="project-item">
+          <div class="proj-header">
+            <div class="proj-name">Superstore Sales Analysis</div>
+            <a href="https://github.com/samir-data-cloud" target="_blank" class="proj-link">GitHub ↗</a>
+          </div>
+          <div class="proj-stack">
+            <span class="proj-tech">Python</span>
+            <span class="proj-tech">Pandas</span>
+            <span class="proj-tech">Tableau</span>
+            <span class="proj-tech">Chart.js</span>
+          </div>
+          <p class="proj-desc" data-fr>
+            Analyse de 9 993 transactions sur 4 ans. Identification de $156K de pertes liées aux remises excessives.
+            Corrélation remise/marge : -0.86. Recommandations de politique tarifaire.
+          </p>
+          <p class="proj-desc" data-en>
+            Analysis of 9,993 transactions over 4 years. Identified $156K in losses from excessive discounts.
+            Discount/margin correlation: -0.86. Pricing policy recommendations.
+          </p>
+          <div class="proj-kpis">
+            <div class="proj-kpi">$2.30M <span data-fr>CA analysé</span><span data-en>Revenue analyzed</span></div>
+            <div class="proj-kpi">-$156K <span data-fr>Pertes identif.</span><span data-en>Losses found</span></div>
+            <div class="proj-kpi">-0.86 <span data-fr>Corr. remise</span><span data-en>Discount corr.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expérience entrepreneuriale -->
+      <div class="cv-section">
+        <div class="section-label" data-fr>Expérience entrepreneuriale</div>
+        <div class="section-label" data-en>Entrepreneurial Experience</div>
+
+        <!-- SCI + Holding -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div class="exp-title" data-fr>Gérant — SCI &amp; Holding</div>
+            <div class="exp-title" data-en>Director — SCI &amp; Holding Company</div>
+            <span class="exp-period">2020 – présent</span>
+          </div>
+          <div class="exp-role" data-fr>Pilotage financier · Gestion de patrimoine · Analyse de rentabilité</div>
+          <div class="exp-role" data-en>Financial steering · Asset management · Profitability analysis</div>
+          <ul class="exp-bullets" data-fr>
+            <li>Pilotage d'une holding structurant des actifs immobiliers via une SCI dédiée</li>
+            <li>Suivi mensuel de la trésorerie, analyse des flux et optimisation fiscale</li>
+            <li>Construction de tableaux de bord financiers pour le suivi des KPIs patrimoniaux</li>
+            <li>Prise de décision data-driven : arbitrages acquisition / cession basés sur les rendements nets</li>
+          </ul>
+          <ul class="exp-bullets" data-en>
+            <li>Running a holding company structuring real estate assets through a dedicated SCI</li>
+            <li>Monthly cash flow tracking, flux analysis and tax optimization</li>
+            <li>Built financial dashboards to monitor asset KPIs and portfolio performance</li>
+            <li>Data-driven decision making: buy/sell arbitrage based on net yield analysis</li>
+          </ul>
+        </div>
+
+        <!-- Immobilier Airbnb -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div class="exp-title" data-fr>Gestionnaire de biens — Location courte &amp; longue durée</div>
+            <div class="exp-title" data-en>Property Manager — Short &amp; Long-term Rental</div>
+            <span class="exp-period">2020 – présent</span>
+          </div>
+          <div class="exp-role" data-fr>Airbnb · Location meublée · Location nue · Optimisation des revenus</div>
+          <div class="exp-role" data-en>Airbnb · Furnished rental · Unfurnished rental · Revenue optimization</div>
+          <ul class="exp-bullets" data-fr>
+            <li>Gestion multi-canal : Airbnb, location meublée et nue — optimisation du mix selon la saisonnalité</li>
+            <li>Analyse du taux d'occupation et des RevPAR (revenu par nuit disponible) pour le pricing dynamique</li>
+            <li>Suivi des indicateurs clés : taux de remplissage, note moyenne, coûts d'entretien vs. revenus nets</li>
+            <li>Réduction des périodes vacantes grâce à l'analyse des données de réservation Airbnb</li>
+          </ul>
+          <ul class="exp-bullets" data-en>
+            <li>Multi-channel management: Airbnb, furnished &amp; unfurnished rental — mix optimized by seasonality</li>
+            <li>Occupancy rate and RevPAR analysis to drive dynamic pricing decisions</li>
+            <li>Tracked key metrics: fill rate, average rating, maintenance costs vs. net revenue</li>
+            <li>Reduced vacancy periods through Airbnb booking data analysis</li>
+          </ul>
+        </div>
+
+        <!-- Transport -->
+        <div class="exp-item">
+          <div class="exp-header">
+            <div class="exp-title" data-fr>Capacité de transport — +3.5 tonnes</div>
+            <div class="exp-title" data-en>Transport Operator Licence — +3.5 tonnes</div>
+            <span class="exp-period" data-fr>Certifié</span>
+            <span class="exp-period" data-en>Certified</span>
+          </div>
+          <div class="exp-role" data-fr>Gestion logistique · Optimisation des coûts opérationnels</div>
+          <div class="exp-role" data-en>Logistics management · Operational cost optimization</div>
+          <ul class="exp-bullets" data-fr>
+            <li>Habilitation officielle au transport de marchandises de plus de 3.5 tonnes</li>
+            <li>Compétences en planification logistique, optimisation des tournées et maîtrise des coûts</li>
+          </ul>
+          <ul class="exp-bullets" data-en>
+            <li>Official licence for goods transport over 3.5 tonnes</li>
+            <li>Logistics planning, route optimization and cost control skills</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Formations & Certifications -->
+      <div class="cv-section">
+        <div class="section-label" data-fr>Formations &amp; Certifications</div>
+        <div class="section-label" data-en>Training &amp; Certifications</div>
+
+        <div class="cert-item">
+          <span class="cert-dot"></span>
+          <div class="cert-body">
+            <div class="cert-name" data-fr>Baccalauréat — Spécialités Mathématiques &amp; SVT</div>
+            <div class="cert-name" data-en>French Baccalauréat — Mathematics &amp; Life Sciences</div>
+            <div class="cert-org" data-fr>Lycée · Mention obtenue</div>
+            <div class="cert-org" data-en>High School · With honours</div>
+          </div>
+        </div>
+        <div class="cert-item">
+          <span class="cert-dot"></span>
+          <div class="cert-body">
+            <div class="cert-name" data-fr>Data Analyst — Formation complète</div>
+            <div class="cert-name" data-en>Data Analyst — Full Training</div>
+            <div class="cert-org">OpenClassrooms / Coursera · 2024–2025</div>
+          </div>
+        </div>
+        <div class="cert-item">
+          <span class="cert-dot"></span>
+          <div class="cert-body">
+            <div class="cert-name" data-fr>Python for Data Science &amp; Machine Learning</div>
+            <div class="cert-name" data-en>Python for Data Science &amp; Machine Learning</div>
+            <div class="cert-org">Udemy · 2024</div>
+          </div>
+        </div>
+        <div class="cert-item">
+          <span class="cert-dot"></span>
+          <div class="cert-body">
+            <div class="cert-name" data-fr>SQL — Analyse de données avancée</div>
+            <div class="cert-name" data-en>SQL — Advanced Data Analysis</div>
+            <div class="cert-org">Mode Analytics / W3Schools · 2024</div>
+          </div>
+        </div>
+        <div class="cert-item">
+          <span class="cert-dot"></span>
+          <div class="cert-body">
+            <div class="cert-name" data-fr>Tableau Desktop Specialist</div>
+            <div class="cert-name" data-en>Tableau Desktop Specialist</div>
+            <div class="cert-org">Tableau Public · 2025</div>
+          </div>
+        </div>
+        <div class="cert-item">
+          <span class="cert-dot"></span>
+          <div class="cert-body">
+            <div class="cert-name" data-fr>Cloud Computing — AWS &amp; GCP Fundamentals</div>
+            <div class="cert-name" data-en>Cloud Computing — AWS &amp; GCP Fundamentals</div>
+            <div class="cert-org">Google Cloud / AWS Training · 2025</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- /cv-body -->
+
+</div><!-- /cv -->
+</div><!-- /page-wrap -->
+
+<script>
+  function setLang(lang) {
+    document.body.className = 'lang-' + lang;
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang);
+    });
+  }
+</script>
+
+</body>
+</html>
