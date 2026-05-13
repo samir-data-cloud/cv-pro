@@ -335,6 +335,72 @@
     </div>
   </section>
 
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="testimonials section">
+    <div class="container">
+      <div class="testi-hdr fade-up">
+        <div class="pill"><span class="pill-dot"></span>Clients</div>
+        <h2 class="s-title">Ils m'ont<br><em>fait confiance</em></h2>
+      </div>
+
+      <div class="testi-carousel fade-up" style="transition-delay:.1s">
+        <div class="testi-track" id="testiTrack">
+
+          <div class="testi-card">
+            <div class="testi-quote">"</div>
+            <p class="testi-text">Samir a transformé nos données de vente en insights actionnables en quelques jours. Son dashboard nous a permis d'identifier des opportunités cachées et d'optimiser notre stratégie commerciale. Un travail rigoureux, clair et orienté résultats.</p>
+            <div class="testi-author">
+              <div class="testi-avatar">JD</div>
+              <div class="testi-info">
+                <span class="testi-name">Directeur Commercial</span>
+                <span class="testi-company">JD Promotion</span>
+              </div>
+              <div class="testi-stars">★★★★★</div>
+            </div>
+          </div>
+
+          <div class="testi-card">
+            <div class="testi-quote">"</div>
+            <p class="testi-text">Excellent travail sur l'analyse de nos données RH. Samir a détecté des patterns d'attrition que nous n'avions pas vus depuis des années. Ses recommandations chiffrées nous ont permis de prendre des décisions concrètes et d'économiser significativement sur le turnover.</p>
+            <div class="testi-author">
+              <div class="testi-avatar">HB</div>
+              <div class="testi-info">
+                <span class="testi-name">DRH</span>
+                <span class="testi-company">HBC</span>
+              </div>
+              <div class="testi-stars">★★★★★</div>
+            </div>
+          </div>
+
+          <div class="testi-card">
+            <div class="testi-quote">"</div>
+            <p class="testi-text">Samir a structuré et analysé notre base de données immobilières avec une précision impressionnante. Le tableau de bord livré est clair, interactif et utilisé quotidiennement par toute l'équipe. Je recommande vivement ses compétences en data analyse.</p>
+            <div class="testi-author">
+              <div class="testi-avatar">DI</div>
+              <div class="testi-info">
+                <span class="testi-name">Directeur Général</span>
+                <span class="testi-company">Duty Immo</span>
+              </div>
+              <div class="testi-stars">★★★★★</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Controls -->
+        <button class="testi-btn testi-prev" onclick="testiMove(-1)" aria-label="Précédent">‹</button>
+        <button class="testi-btn testi-next" onclick="testiMove(1)" aria-label="Suivant">›</button>
+
+        <!-- Dots -->
+        <div class="testi-dots" id="testiDots">
+          <span class="testi-dot active" onclick="testiGo(0)"></span>
+          <span class="testi-dot" onclick="testiGo(1)"></span>
+          <span class="testi-dot" onclick="testiGo(2)"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
   <section id="contact" class="contact section">
     <div class="container">
@@ -470,6 +536,29 @@
       el.querySelectorAll('.sk-fill').forEach(b => { b.style.width = '0%' });
       obs.observe(el);
     });
+
+    // TESTIMONIALS CAROUSEL
+    let testiCurrent = 0;
+    const testiTotal = 3;
+    let testiTimer = setInterval(() => testiMove(1), 4000);
+    function testiMove(dir) { testiGo((testiCurrent + dir + testiTotal) % testiTotal); }
+    function testiGo(index) {
+      clearInterval(testiTimer);
+      testiCurrent = index;
+      document.getElementById('testiTrack').style.transform = `translateX(-${index * 100}%)`;
+      document.querySelectorAll('.testi-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+      testiTimer = setInterval(() => testiMove(1), 4000);
+    }
+    (function(){
+      const track = document.getElementById('testiTrack');
+      if(!track) return;
+      let startX = 0;
+      track.addEventListener('touchstart', e => startX = e.touches[0].clientX, {passive:true});
+      track.addEventListener('touchend', e => {
+        const diff = startX - e.changedTouches[0].clientX;
+        if(Math.abs(diff) > 40) testiMove(diff > 0 ? 1 : -1);
+      }, {passive:true});
+    })();
 
     function handleSubmit(e) {
       e.preventDefault();
