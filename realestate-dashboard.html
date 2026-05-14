@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Immobilier · 3 Propriétés · France × UAE</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f4f0; --dark: #1a1a18; --green: #1D9E75;
+      --red: #E24B4A; --orange: #f59e0b; --blue: #3b82f6;
+      --purple: #8b5cf6; --card: #fff; --muted: #6b7280; --border: #e5e7eb;
+      --toulouse: #1D9E75; --cugnaux: #3b82f6; --sharjah: #f59e0b;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--dark); font-size: 14px; }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--dark); color: #fff;
+      padding: 1.75rem 3rem;
+      display: flex; justify-content: space-between; align-items: flex-end;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
+    header h1 span { color: var(--green); }
+    header p { font-size: .82rem; color: #9ca3af; margin-top: .25rem; }
+    .header-meta { text-align: right; font-size: .78rem; color: #9ca3af; }
+    .header-meta strong { color: var(--green); display: block; font-size: .88rem; }
+    .header-props { display: flex; gap: 1rem; margin-top: .6rem; }
+    .prop-badge {
+      display: flex; align-items: center; gap: .4rem; font-size: .72rem;
+      background: rgba(255,255,255,.08); padding: .3rem .7rem;
+      border-radius: 999px; color: #d1d5db;
+    }
+    .prop-badge .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    main { max-width: 1400px; margin: 0 auto; padding: 2rem 1.75rem; }
+
+    /* ── KPIs ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .kpi { background: var(--card); border-radius: 10px; padding: 1.25rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--green); }
+    .kpi.red::before    { background: var(--red); }
+    .kpi.orange::before { background: var(--orange); }
+    .kpi.blue::before   { background: var(--blue); }
+    .kpi.purple::before { background: var(--purple); }
+    .kpi-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: .4rem; }
+    .kpi-value { font-size: 1.7rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+    .kpi-sub   { font-size: .72rem; color: var(--muted); margin-top: .3rem; }
+    .badge { display: inline-block; font-size: .68rem; font-weight: 700; padding: .12rem .45rem; border-radius: 999px; margin-top: .4rem; }
+    .b-green  { background: #d1fae5; color: #065f46; }
+    .b-blue   { background: #dbeafe; color: #1e3a8a; }
+    .b-orange { background: #fef3c7; color: #92400e; }
+
+    /* ── PROPERTY LEGEND ── */
+    .legend-bar {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: .9rem 1.5rem; margin-bottom: 1.75rem;
+      display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+    }
+    .legend-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-right: .5rem; }
+    .leg-item { display: flex; align-items: center; gap: .5rem; font-size: .8rem; font-weight: 600; }
+    .leg-dot  { width: 10px; height: 10px; border-radius: 50%; }
+    .leg-sub  { font-size: .68rem; color: var(--muted); font-weight: 400; }
+
+    /* ── CHARTS ── */
+    .section-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+    .charts-row { display: grid; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .r-2  { grid-template-columns: 1fr 1fr; }
+    .r-3  { grid-template-columns: 1fr 1fr 1fr; }
+    .r-21 { grid-template-columns: 2fr 1fr; }
+    .r-12 { grid-template-columns: 1fr 2fr; }
+
+    .card { background: var(--card); border-radius: 10px; padding: 1.4rem; border: 1px solid var(--border); }
+    .card-title { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--dark); }
+    .card-sub   { font-size: .72rem; color: var(--muted); margin-bottom: 1.1rem; margin-top: .2rem; }
+
+    /* ── PROPERTY CARDS ── */
+    .prop-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.75rem; }
+    .prop-card { border-radius: 10px; padding: 1.4rem; color: #fff; position: relative; overflow: hidden; }
+    .prop-card.toulouse { background: linear-gradient(135deg, #0d5c3a 0%, #1D9E75 100%); }
+    .prop-card.cugnaux  { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+    .prop-card.sharjah  { background: linear-gradient(135deg, #78350f 0%, #f59e0b 100%); }
+    .prop-card::after {
+      content: ''; position: absolute; right: -20px; bottom: -20px;
+      width: 100px; height: 100px; border-radius: 50%;
+      background: rgba(255,255,255,.08);
+    }
+    .pc-flag { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; opacity: .7; margin-bottom: .5rem; }
+    .pc-name { font-size: 1rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+    .pc-rev  { font-size: 1.9rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+    .pc-rev-lbl { font-size: .7rem; opacity: .7; margin-top: .2rem; margin-bottom: .8rem; }
+    .pc-stats { display: flex; gap: 1rem; }
+    .pc-stat { }
+    .pc-stat-n { font-size: 1rem; font-weight: 700; }
+    .pc-stat-l { font-size: .65rem; opacity: .7; }
+    .pc-platform { font-size: .68rem; opacity: .75; margin-top: .75rem; font-style: italic; }
+
+    /* ── COMPARISON TABLE ── */
+    .cmp-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+    .cmp-table th { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: .5rem .75rem; text-align: left; border-bottom: 2px solid var(--border); }
+    .cmp-table td { padding: .6rem .75rem; border-bottom: 1px solid var(--border); }
+    .cmp-table tr:last-child td { border-bottom: none; }
+    .cmp-table tr:hover td { background: #f9fafb; }
+    .cell-prop { font-weight: 600; display: flex; align-items: center; gap: .5rem; }
+    .cell-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .cell-green { color: var(--green); font-weight: 700; }
+    .cell-red   { color: var(--red); font-weight: 700; }
+    .cell-blue  { color: var(--blue); font-weight: 700; }
+    .winner-badge { display: inline-block; font-size: .6rem; font-weight: 700; background: #d1fae5; color: #065f46; padding: .1rem .35rem; border-radius: 999px; margin-left: .35rem; }
+
+    /* ── INSIGHTS ── */
+    .insights-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 1.25rem; }
+    .insight { background: var(--dark); color: #fff; border-radius: 10px; padding: 1.25rem; }
+    .ins-icon  { font-size: 1.3rem; margin-bottom: .6rem; }
+    .ins-title { font-size: .75rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .35rem; }
+    .ins-num   { font-size: 1.6rem; font-weight: 700; line-height: 1; margin: .3rem 0; }
+    .ins-text  { font-size: .78rem; line-height: 1.6; color: #d1d5db; }
+    .ins-action{ font-size: .72rem; color: var(--green); font-weight: 600; margin-top: .5rem; }
+    .insight.toulouse { border-top: 3px solid var(--toulouse); }
+    .insight.cugnaux  { border-top: 3px solid var(--cugnaux); }
+    .insight.sharjah  { border-top: 3px solid var(--sharjah); }
+    .insight.strategy { border-top: 3px solid var(--purple); }
+    .insight.platform { border-top: 3px solid #ec4899; }
+    .insight.geo      { border-top: 3px solid var(--red); }
+
+    /* ── BACK LINK ── */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      color: #9ca3af; text-decoration: none; font-size: .78rem;
+      margin-bottom: 1.5rem; transition: color .2s;
+    }
+    .back-btn:hover { color: var(--green); }
+
+    footer { text-align: center; padding: 2rem; font-size: .78rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--green); text-decoration: none; }
+
+    @media (max-width: 900px) {
+      header { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1.25rem; }
+      .kpi-grid { grid-template-columns: repeat(2,1fr); }
+      .prop-cards, .r-2, .r-3, .r-21, .r-12, .insights-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Portfolio Immobilier — <span>3 Propriétés</span> · France × UAE</h1>
+    <p>Toulouse T3 · Cugnaux T3 · Sharjah 1BR · Airbnb + Booking.com · Données réelles propriétaire</p>
+    <div class="header-props">
+      <span class="prop-badge"><span class="dot" style="background:#1D9E75"></span>Toulouse · France</span>
+      <span class="prop-badge"><span class="dot" style="background:#3b82f6"></span>Cugnaux · France</span>
+      <span class="prop-badge"><span class="dot" style="background:#f59e0b"></span>Sharjah · UAE</span>
+    </div>
+  </div>
+  <div class="header-meta">
+    <strong>Bouziane Samir</strong>
+    Data Analyst & BI Developer<br>
+    Analyse propriétaire · Données réelles · Jun 2023 – Mai 2026
+  </div>
+</header>
+
+<main>
+  <a href="index.html" class="back-btn">← Retour au portfolio</a>
+
+  <!-- KPIs PORTEFEUILLE -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Revenue Total</div>
+      <div class="kpi-value">€38 756</div>
+      <div class="kpi-sub">3 propriétés · 2 pays</div>
+      <span class="badge b-green">Jun 2023 – Mai 2026</span>
+    </div>
+    <div class="kpi blue">
+      <div class="kpi-label">Meilleure propriété</div>
+      <div class="kpi-value">Cugnaux</div>
+      <div class="kpi-sub">€17 684 · 46% du portfolio</div>
+      <span class="badge b-blue">+20.6% YoY Booking</span>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Nuits totales</div>
+      <div class="kpi-value">583</div>
+      <div class="kpi-sub">ADR moyen : €66 / nuit</div>
+      <span class="badge b-green">2 plateformes</span>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">Airbnb vs Booking</div>
+      <div class="kpi-value">50 / 50</div>
+      <div class="kpi-sub">€19 558 Airbnb · €19 198 Booking</div>
+      <span class="badge b-orange">Mix équilibré</span>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Point critique</div>
+      <div class="kpi-value">52.1%</div>
+      <div class="kpi-sub">Annulations Sharjah vs 8% pairs</div>
+      <span class="badge" style="background:#fee2e2;color:#991b1b">Géopolitique</span>
+    </div>
+  </div>
+
+  <!-- PROPERTY CARDS -->
+  <div class="section-title">Vue par propriété</div>
+  <div class="prop-cards">
+    <div class="prop-card toulouse">
+      <div class="pc-flag">🇫🇷 Toulouse · Haute-Garonne</div>
+      <div class="pc-name">Beau T3 75m² avec Grande Terrasse</div>
+      <div class="pc-rev">€10 110</div>
+      <div class="pc-rev-lbl">Revenue net total</div>
+      <div class="pc-stats">
+        <div class="pc-stat"><div class="pc-stat-n">90</div><div class="pc-stat-l">Nuits</div></div>
+        <div class="pc-stat"><div class="pc-stat-n">€112</div><div class="pc-stat-l">ADR moy.</div></div>
+        <div class="pc-stat"><div class="pc-stat-n">Faible</div><div class="pc-stat-l">Annulations</div></div>
+      </div>
+      <div class="pc-platform">Airbnb 84% · Booking.com 16% · Jun 2023 – Avr 2024</div>
+    </div>
+    <div class="prop-card cugnaux">
+      <div class="pc-flag">🇫🇷 Cugnaux · Banlieue Toulousaine (31)</div>
+      <div class="pc-name">Bel Appartement T3 Hyper Calme</div>
+      <div class="pc-rev">€17 684</div>
+      <div class="pc-rev-lbl">Revenue net total</div>
+      <div class="pc-stats">
+        <div class="pc-stat"><div class="pc-stat-n">260</div><div class="pc-stat-l">Nuits</div></div>
+        <div class="pc-stat"><div class="pc-stat-n">€68</div><div class="pc-stat-l">ADR moy.</div></div>
+        <div class="pc-stat"><div class="pc-stat-n">+20.6%</div><div class="pc-stat-l">YoY Booking</div></div>
+      </div>
+      <div class="pc-platform">Airbnb 62% · Booking.com 38% · Jun 2023 – Août 2024</div>
+    </div>
+    <div class="prop-card sharjah">
+      <div class="pc-flag">🇦🇪 Sharjah · UAE</div>
+      <div class="pc-name">Top Rated Award Winning 1BR</div>
+      <div class="pc-rev">€10 963</div>
+      <div class="pc-rev-lbl">AED 43 851 · Taux 0.25</div>
+      <div class="pc-stats">
+        <div class="pc-stat"><div class="pc-stat-n">233</div><div class="pc-stat-l">Nuits</div></div>
+        <div class="pc-stat"><div class="pc-stat-n">€47</div><div class="pc-stat-l">ADR</div></div>
+        <div class="pc-stat"><div class="pc-stat-n" style="color:#fbbf24">52.1%</div><div class="pc-stat-l">Annulations</div></div>
+      </div>
+      <div class="pc-platform">Booking.com 100% · Sep 2024 – Mai 2026</div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 1 : Revenue comparison + Channel mix -->
+  <div class="charts-row r-21">
+    <div class="card">
+      <div class="card-title">Revenue par propriété & canal</div>
+      <div class="card-sub">Airbnb + Booking.com · Revenue net en € (AED converti à 0.25)</div>
+      <canvas id="chartRevenue" height="160"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Mix canal par propriété</div>
+      <div class="card-sub">Part Airbnb vs Booking.com</div>
+      <canvas id="chartChannelMix" height="160"></canvas>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2 : ADR comparison + Seasonality -->
+  <div class="charts-row r-2">
+    <div class="card">
+      <div class="card-title">ADR par plateforme et propriété</div>
+      <div class="card-sub">Prix moyen par nuit (€) — Airbnb génère +38% vs Booking en moyenne</div>
+      <canvas id="chartADR" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Saisonnalité par mois de l'année</div>
+      <div class="card-sub">Indice de revenue normalisé (100 = mois max par propriété) — complémentarité France/UAE</div>
+      <canvas id="chartSeasonality" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 3 : Monthly revenue + Cugnaux rate plans -->
+  <div class="charts-row r-12">
+    <div class="card">
+      <div class="card-title">Plans tarifaires Cugnaux Booking.com</div>
+      <div class="card-sub">110 nuits · ADR €60.56 moyen</div>
+      <canvas id="chartCugnaux" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Évolution mensuelle Airbnb — Toulouse & Cugnaux</div>
+      <div class="card-sub">Revenue net Airbnb par mois (données réelles)</div>
+      <canvas id="chartMonthly" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="card-title">Tableau comparatif — Métriques clés</div>
+    <div class="card-sub">Performance détaillée par propriété</div>
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th>Propriété</th>
+          <th>Revenue total</th>
+          <th>Nuits</th>
+          <th>ADR moyen</th>
+          <th>ADR Airbnb</th>
+          <th>ADR Booking</th>
+          <th>Canal dominant</th>
+          <th>Annulation</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="cell-prop"><span class="cell-dot" style="background:#1D9E75"></span>Toulouse T3</span></td>
+          <td class="cell-green">€10 110</td>
+          <td>90</td>
+          <td>€112</td>
+          <td>€122/nuit</td>
+          <td>€79/nuit</td>
+          <td>Airbnb (84%)</td>
+          <td class="cell-green">~5% <span class="winner-badge">✓ faible</span></td>
+          <td><span style="color:#f59e0b;font-weight:600">Arrêté Avr-24</span></td>
+        </tr>
+        <tr>
+          <td><span class="cell-prop"><span class="cell-dot" style="background:#3b82f6"></span>Cugnaux T3</span></td>
+          <td class="cell-blue">€17 684 <span class="winner-badge">🏆 #1</span></td>
+          <td>260 <span class="winner-badge">#1</span></td>
+          <td>€68</td>
+          <td>€73/nuit</td>
+          <td>€61/nuit</td>
+          <td>Mixte 62/38</td>
+          <td class="cell-green">~8% <span class="winner-badge">✓ faible</span></td>
+          <td><span style="color:#f59e0b;font-weight:600">Arrêté Sep-24</span></td>
+        </tr>
+        <tr>
+          <td><span class="cell-prop"><span class="cell-dot" style="background:#f59e0b"></span>Sharjah UAE</span></td>
+          <td>€10 963</td>
+          <td>233</td>
+          <td>€47 (AED 188)</td>
+          <td>N/A</td>
+          <td>€47 (AED 188)</td>
+          <td>Booking 100%</td>
+          <td class="cell-red">52.1% ×6.5</td>
+          <td><span style="color:#E24B4A;font-weight:600">Choc géo Iran</span></td>
+        </tr>
+        <tr style="background:#f9fafb;font-weight:700">
+          <td>TOTAL PORTFOLIO</td>
+          <td>€38 756</td>
+          <td>583</td>
+          <td>€66</td>
+          <td>€97 moy.</td>
+          <td>€61 moy.</td>
+          <td>50% / 50%</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="section-title">Insights & Recommandations stratégiques</div>
+  <div class="insights-grid">
+    <div class="insight cugnaux">
+      <div class="ins-icon">🏆</div>
+      <div class="ins-title">Cugnaux — Champion du portfolio</div>
+      <div class="ins-num">€17 684</div>
+      <div class="ins-text">46% du revenue total malgré une localisation suburbaine. Mix canal optimal (62/38). Croissance Booking.com +20.6% YoY. Taux d'annulation faible (~8%). La propriété la plus résiliente et rentable du portefeuille.</div>
+      <div class="ins-action">→ Modèle à reproduire : diversification multi-canal</div>
+    </div>
+    <div class="insight platform">
+      <div class="ins-icon">📊</div>
+      <div class="ins-title">Airbnb vs Booking — Arbitrage de prix</div>
+      <div class="ins-num">+38%</div>
+      <div class="ins-text">Airbnb génère systématiquement +38% d'ADR vs Booking.com sur les propriétés françaises (Toulouse : +55%, Cugnaux : +21%). Booking = volume et remplissage aux creux. Airbnb = prix premium et flexibilité.</div>
+      <div class="ins-action">→ Stratégie : Airbnb en priorité, Booking pour combler les creux</div>
+    </div>
+    <div class="insight strategy">
+      <div class="ins-icon">🌍</div>
+      <div class="ins-title">Saisonnalité inversée — Avantage structurel</div>
+      <div class="ins-num">12 mois</div>
+      <div class="ins-text">France : pic été (Jul-Août), creux hiver. UAE : pic hiver (Nov-Mar), creux été. Complémentarité parfaite sur 12 mois. La diversification géographique protège le portfolio contre les chocs saisonniers locaux.</div>
+      <div class="ins-action">→ Diversification géographique = revenue lissé sur l'année</div>
+    </div>
+    <div class="insight geo">
+      <div class="ins-icon">🔴</div>
+      <div class="ins-title">Sharjah — Choc géopolitique Iran</div>
+      <div class="ins-num">52.1%</div>
+      <div class="ins-text">Taux d'annulation ×6.5 vs pairs (8%). Effondrement de la demande future lié au conflit Iran 2025-26 qui déprime le tourisme aux Émirats. Facteur EXTERNE et non contrôlable. N'impacte pas les propriétés françaises.</div>
+      <div class="ins-action">→ Pivot : baux longue durée via Bayut/Dubizzle (résidents/expats)</div>
+    </div>
+    <div class="insight toulouse">
+      <div class="ins-icon">🔄</div>
+      <div class="ins-title">Toulouse — Potentiel de réactivation</div>
+      <div class="ins-num">€10 110</div>
+      <div class="ins-text">Arrêtée en Avr-24, la propriété a généré €10 110 en seulement 11 mois actifs avec un faible taux d'annulation. ADR Airbnb élevé (€122/nuit). Pic automnal marqué (Sep-Oct et Mar-24). La réactivation offre un potentiel direct.</div>
+      <div class="ins-action">→ Réactivation estimée : +€10 000/an avec même profil</div>
+    </div>
+    <div class="insight" style="border-top:3px solid var(--green)">
+      <div class="ins-icon">💰</div>
+      <div class="ins-title">Potentiel d'optimisation total</div>
+      <div class="ins-num">+€17 779</div>
+      <div class="ins-text">Annulations Sharjah → 20% : +€6 680. Cugnaux Booking tarif flexible uniquement (+€14 ADR × 69 nuits) : +€989. Réactivation Toulouse : +€10 110. Toutes optimisations combinées possibles sans investissement supplémentaire.</div>
+      <div class="ins-action">→ Potentiel annuel : +€17 779 / an sur le portfolio actuel</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Analyse propriétaire · Données réelles · Bouziane Samir — Data Analyst &amp; BI Developer ·
+  <a href="index.html">Portfolio</a> ·
+  <a href="mailto:m.salahbouziane@gmail.com">m.salahbouziane@gmail.com</a>
+</footer>
+
+<script>
+  const GREEN   = '#1D9E75';
+  const BLUE    = '#3b82f6';
+  const ORANGE  = '#f59e0b';
+  const DARK    = '#1a1a18';
+  const MUTED   = '#9ca3af';
+  const AIRBNB  = '#FF5A5F';
+  const BOOKING = '#003580';
+
+  Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+  Chart.defaults.color = '#6b7280';
+
+  // ── 1. REVENUE PAR PROPRIÉTÉ & CANAL (Grouped Bar) ──────────────────────
+  new Chart(document.getElementById('chartRevenue'), {
+    type: 'bar',
+    data: {
+      labels: ['Toulouse', 'Cugnaux', 'Sharjah UAE'],
+      datasets: [
+        {
+          label: 'Airbnb',
+          data: [8537, 11022, 0],
+          backgroundColor: AIRBNB,
+          borderRadius: 4,
+        },
+        {
+          label: 'Booking.com',
+          data: [1573, 6662, 10963],
+          backgroundColor: BOOKING,
+          borderRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: €${ctx.raw.toLocaleString('fr-FR')}`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          ticks: { callback: v => `€${(v/1000).toFixed(0)}K` },
+          grid: { color: '#f3f4f6' }
+        }
+      }
+    }
+  });
+
+  // ── 2. MIX CANAL (Doughnut × 3) ─────────────────────────────────────────
+  // Simulate 3 mini doughnuts in one canvas with a workaround: use bar chart
+  new Chart(document.getElementById('chartChannelMix'), {
+    type: 'bar',
+    data: {
+      labels: ['Toulouse', 'Cugnaux', 'Sharjah'],
+      datasets: [
+        {
+          label: 'Airbnb %',
+          data: [84, 62, 0],
+          backgroundColor: AIRBNB,
+          borderRadius: 4,
+        },
+        {
+          label: 'Booking.com %',
+          data: [16, 38, 100],
+          backgroundColor: BOOKING,
+          borderRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      indexAxis: 'y',
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 15 } },
+        tooltip: {
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}%` }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true, max: 100,
+          ticks: { callback: v => `${v}%` },
+          grid: { color: '#f3f4f6' }
+        },
+        y: { stacked: true, grid: { display: false } }
+      }
+    }
+  });
+
+  // ── 3. ADR PAR PLATEFORME ────────────────────────────────────────────────
+  new Chart(document.getElementById('chartADR'), {
+    type: 'bar',
+    data: {
+      labels: ['Toulouse', 'Cugnaux', 'Sharjah'],
+      datasets: [
+        {
+          label: 'ADR Airbnb (€)',
+          data: [122, 73, null],
+          backgroundColor: AIRBNB,
+          borderRadius: 4,
+        },
+        {
+          label: 'ADR Booking.com (€)',
+          data: [79, 61, 47],
+          backgroundColor: BOOKING,
+          borderRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 15 } },
+        tooltip: {
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: €${ctx.raw}/nuit` }
+        }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          ticks: { callback: v => `€${v}` },
+          grid: { color: '#f3f4f6' }
+        }
+      }
+    }
+  });
+
+  // ── 4. SAISONNALITÉ INVERSÉE ─────────────────────────────────────────────
+  // Normalized index (0-100) showing when each property peaks during the year
+  const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  // France (Toulouse+Cugnaux combined) - summer peak
+  const france_idx = [20, 25, 45, 55, 60, 85, 100, 95, 80, 70, 30, 20];
+  // UAE (Sharjah) - winter peak
+  const uae_idx    = [95, 90, 75, 15, 5, 0, 0, 0, 10, 40, 85, 100];
+
+  new Chart(document.getElementById('chartSeasonality'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: 'France (Toulouse + Cugnaux)',
+          data: france_idx,
+          borderColor: GREEN,
+          backgroundColor: GREEN + '20',
+          fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2.5,
+        },
+        {
+          label: 'UAE (Sharjah)',
+          data: uae_idx,
+          borderColor: ORANGE,
+          backgroundColor: ORANGE + '20',
+          fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2.5,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 15 } },
+        tooltip: {
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}/100` }
+        }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          min: 0, max: 105,
+          ticks: { callback: v => `${v}` },
+          grid: { color: '#f3f4f6' }
+        }
+      }
+    }
+  });
+
+  // ── 5. CUGNAUX BOOKING RATE PLANS (Donut) ───────────────────────────────
+  new Chart(document.getElementById('chartCugnaux'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Non-remboursable (63%)\n€57.17/nuit', 'Flexible (30%)\n€71.50/nuit', 'Weekly (7%)\n€44.76/nuit'],
+      datasets: [{
+        data: [69, 33, 8],
+        backgroundColor: [GREEN, BLUE, ORANGE],
+        borderWidth: 2, borderColor: '#fff',
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      cutout: '60%',
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 10, padding: 12, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const adrs = [57.17, 71.50, 44.76];
+              return ` ${ctx.raw} nuits · ADR €${adrs[ctx.dataIndex]}`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // ── 6. MONTHLY AIRBNB (Toulouse + Cugnaux) ──────────────────────────────
+  const tlsMonths = ['Jun-23','Jul-23','Aug-23','Sep-23','Oct-23','Nov-23','Dec-23','Jan-24','Feb-24','Mar-24','Apr-24'];
+  const tlsRev    = [400, 700, 900, 1453, 1560, 650, 400, 350, 400, 1591, 134];
+  const cugnMonths= ['Jun-23','Jul-23','Aug-23','Sep-23','Oct-23','Nov-23','Dec-23','Jan-24','Feb-24','Mar-24','Apr-24','May-24','Jun-24','Jul-24','Aug-24'];
+  const cugnRev   = [900, 1494, 1200, 700, 550, 450, 400, 350, 400, 550, 600, 628, 816, 854, 855];
+
+  // Merge labels
+  const allMonths = [...new Set([...tlsMonths, ...cugnMonths])];
+  const tlsData   = allMonths.map(m => { const i = tlsMonths.indexOf(m); return i >= 0 ? tlsRev[i] : null; });
+  const cugnData  = allMonths.map(m => { const i = cugnMonths.indexOf(m); return i >= 0 ? cugnRev[i] : null; });
+
+  new Chart(document.getElementById('chartMonthly'), {
+    type: 'bar',
+    data: {
+      labels: allMonths,
+      datasets: [
+        {
+          label: 'Toulouse Airbnb',
+          data: tlsData,
+          backgroundColor: GREEN + 'cc',
+          borderRadius: 3,
+        },
+        {
+          label: 'Cugnaux Airbnb',
+          data: cugnData,
+          backgroundColor: BLUE + 'cc',
+          borderRadius: 3,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.raw != null ? ` ${ctx.dataset.label}: €${ctx.raw.toLocaleString('fr-FR')}` : ''
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45 } },
+        y: {
+          ticks: { callback: v => `€${v}` },
+          grid: { color: '#f3f4f6' }
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>
