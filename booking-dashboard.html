@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking.com — Dashboard Analytique · Sharjah UAE</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f4f0; --dark: #1a1a18; --green: #1D9E75;
+      --red: #E24B4A; --orange: #f59e0b; --card: #fff;
+      --muted: #6b7280; --border: #e5e7eb;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--dark); font-size: 14px; }
+
+    header {
+      background: var(--dark); color: #fff;
+      padding: 1.75rem 3rem;
+      display: flex; justify-content: space-between; align-items: flex-end;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
+    header h1 span { color: var(--green); }
+    header p { font-size: .82rem; color: #9ca3af; margin-top: .25rem; }
+    .header-meta { text-align: right; font-size: .78rem; color: #9ca3af; }
+    .header-meta strong { color: var(--green); display: block; font-size: .88rem; }
+
+    main { max-width: 1400px; margin: 0 auto; padding: 2rem 1.75rem; }
+
+    /* KPIs */
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .kpi { background: var(--card); border-radius: 10px; padding: 1.25rem; border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--green); }
+    .kpi.red::before  { background: var(--red); }
+    .kpi.orange::before { background: var(--orange); }
+    .kpi-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: .4rem; }
+    .kpi-value { font-size: 1.7rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+    .kpi-sub   { font-size: .72rem; color: var(--muted); margin-top: .3rem; }
+    .badge { display: inline-block; font-size: .68rem; font-weight: 700; padding: .12rem .45rem; border-radius: 999px; margin-top: .4rem; }
+    .b-red   { background: #fee2e2; color: #991b1b; }
+    .b-green { background: #d1fae5; color: #065f46; }
+    .b-orange{ background: #fef3c7; color: #92400e; }
+
+    /* Alert banner */
+    .alert {
+      background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px;
+      padding: 1rem 1.5rem; margin-bottom: 2rem;
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .alert-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .alert-title { font-size: .85rem; font-weight: 700; color: #991b1b; margin-bottom: .25rem; }
+    .alert-text  { font-size: .8rem; color: #6b7280; line-height: 1.5; }
+
+    /* Charts */
+    .charts-row { display: grid; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .r-2 { grid-template-columns: 1fr 1fr; }
+    .r-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .r-21{ grid-template-columns: 2fr 1fr; }
+
+    .card { background: var(--card); border-radius: 10px; padding: 1.4rem; border: 1px solid var(--border); }
+    .card-title { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--dark); }
+    .card-sub   { font-size: .72rem; color: var(--muted); margin-bottom: 1.1rem; margin-top: .2rem; }
+
+    /* Comparison bars */
+    .cmp-row { display: flex; flex-direction: column; gap: .65rem; margin-top: .5rem; }
+    .cmp-item { }
+    .cmp-label { font-size: .75rem; font-weight: 600; margin-bottom: .2rem; display: flex; justify-content: space-between; }
+    .cmp-label span { color: var(--muted); font-weight: 400; font-size: .7rem; }
+    .cmp-bars { display: flex; flex-direction: column; gap: .2rem; }
+    .cmp-bar-row { display: flex; align-items: center; gap: .5rem; }
+    .cmp-bar-label { font-size: .65rem; width: 30px; color: var(--muted); flex-shrink: 0; }
+    .cmp-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .cmp-fill { height: 100%; border-radius: 3px; }
+    .cmp-val { font-size: .68rem; font-weight: 700; width: 50px; text-align: right; flex-shrink: 0; }
+
+    /* Insights */
+    .insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.25rem; }
+    .insight { background: var(--dark); color: #fff; border-radius: 10px; padding: 1.25rem; }
+    .ins-icon  { font-size: 1.3rem; margin-bottom: .6rem; }
+    .ins-title { font-size: .75rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .35rem; }
+    .ins-num   { font-size: 1.6rem; font-weight: 700; line-height: 1; margin: .3rem 0; }
+    .ins-text  { font-size: .78rem; line-height: 1.6; color: #d1d5db; }
+    .ins-action{ font-size: .72rem; color: var(--green); font-weight: 600; margin-top: .5rem; }
+
+    footer { text-align: center; padding: 2rem; font-size: .78rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--green); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Booking.com — <span>Sharjah UAE</span> · Dashboard Analytique</h1>
+    <p>Top Rated Award Winning 1BR · Sep 2024 – Mai 2026 · 97 réservations analysées</p>
+  </div>
+  <div class="header-meta">
+    <strong>Bouziane Samir</strong>
+    Data Analyst & BI Developer<br>
+    Analyse propriétaire · Données réelles
+  </div>
+</header>
+
+<main>
+
+  <!-- ALERT -->
+  <div class="alert">
+    <div class="alert-icon">🚨</div>
+    <div>
+      <div class="alert-title">1 problème interne critique + 1 choc externe identifiés</div>
+      <div class="alert-text">
+        (1) <strong>Interne — contrôlable :</strong> Taux d'annulation de <strong>52.1%</strong> soit 6.5× la moyenne des concurrents (8%) — cause : politique tarifaire 100% remboursable = réservations spéculatives sans engagement réel.<br>
+        (2) <strong>Externe — non contrôlable :</strong> L'effondrement des réservations futures (−78% vs N-1) est attribuable au <strong>contexte géopolitique régional (conflit Iran, 2025-2026)</strong> qui a fortement réduit le tourisme aux Émirats. Ce facteur macro-économique affecte l'ensemble du marché et exige une stratégie d'adaptation, pas une correction interne.
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Revenue total</div>
+      <div class="kpi-value">AED 43.8K</div>
+      <div class="kpi-sub">233 nuits · Sep 24 – Mai 26</div>
+      <span class="badge b-green">+5.8% vs N-1</span>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">ADR moyen</div>
+      <div class="kpi-value">AED 188</div>
+      <div class="kpi-sub">Concurrents : AED 212</div>
+      <span class="badge b-orange">−7% vs pairs</span>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Taux d'annulation</div>
+      <div class="kpi-value">52.1%</div>
+      <div class="kpi-sub">Concurrents : 8%</div>
+      <span class="badge b-red">×6.5 vs pairs</span>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Revenus futurs</div>
+      <div class="kpi-value">AED 5.5K</div>
+      <div class="kpi-sub">L'an dernier : AED 24.9K</div>
+      <span class="badge b-red">−78% vs N-1</span>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Durée séjour moy.</div>
+      <div class="kpi-value">4.58 <small style="font-size:1rem">nuits</small></div>
+      <div class="kpi-sub">Concurrents : 3.4 nuits</div>
+      <span class="badge b-green">+35% vs pairs</span>
+    </div>
+  </div>
+
+  <!-- Row 1: Revenue + Cancellation rate -->
+  <div class="charts-row r-21">
+    <div class="card">
+      <div class="card-title">Revenue mensuel vs N-1</div>
+      <div class="card-sub">Nuits vendues et ADR — comparaison année précédente</div>
+      <canvas id="revenueChart" height="90"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Taux d'annulation mensuel</div>
+      <div class="card-sub">Évolution Mai 2025 → Mar 2026</div>
+      <canvas id="cancelMonthChart" height="160"></canvas>
+    </div>
+  </div>
+
+  <!-- Row 2: Book window cancel + ADR by window + Rate plans -->
+  <div class="charts-row r-3">
+    <div class="card">
+      <div class="card-title">Annulations par délai de réservation</div>
+      <div class="card-sub">% annulé selon le délai avant check-in</div>
+      <canvas id="cancelWindowChart" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">ADR par délai de réservation</div>
+      <div class="card-sub">Prix moyen selon quand le client a réservé (AED)</div>
+      <canvas id="adrWindowChart" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Mix tarifaire</div>
+      <div class="card-sub">Distribution des nuits par type de tarif</div>
+      <canvas id="ratePlanChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Row 3: Segments comparison + Pace -->
+  <div class="charts-row r-2">
+    <div class="card">
+      <div class="card-title">Comparaison segments vs concurrents</div>
+      <div class="card-sub">ADR · Taux d'annulation · Durée de séjour — Moi vs pairs</div>
+
+      <div class="cmp-row">
+        <div class="cmp-item">
+          <div class="cmp-label">ADR global <span>Moi AED 197 · Pairs AED 212</span></div>
+          <div class="cmp-bars">
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Moi</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:93%;background:#1D9E75"></div></div>
+              <span class="cmp-val" style="color:#1D9E75">197</span>
+            </div>
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Pairs</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:100%;background:#d1d5db"></div></div>
+              <span class="cmp-val" style="color:#6b7280">212</span>
+            </div>
+          </div>
+        </div>
+        <div class="cmp-item">
+          <div class="cmp-label">Taux annulation <span style="color:#E24B4A;font-weight:700">CRITIQUE</span></div>
+          <div class="cmp-bars">
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Moi</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:100%;background:#E24B4A"></div></div>
+              <span class="cmp-val" style="color:#E24B4A">52.1%</span>
+            </div>
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Pairs</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:15%;background:#1D9E75"></div></div>
+              <span class="cmp-val" style="color:#1D9E75">8%</span>
+            </div>
+          </div>
+        </div>
+        <div class="cmp-item">
+          <div class="cmp-label">ADR Business <span style="color:#1D9E75;font-weight:700">AVANTAGE +39%</span></div>
+          <div class="cmp-bars">
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Moi</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:100%;background:#1D9E75"></div></div>
+              <span class="cmp-val" style="color:#1D9E75">260</span>
+            </div>
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Pairs</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:72%;background:#d1d5db"></div></div>
+              <span class="cmp-val" style="color:#6b7280">187</span>
+            </div>
+          </div>
+        </div>
+        <div class="cmp-item">
+          <div class="cmp-label">Durée séjour <span style="color:#1D9E75;font-weight:700">AVANTAGE +35%</span></div>
+          <div class="cmp-bars">
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Moi</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:100%;background:#1D9E75"></div></div>
+              <span class="cmp-val" style="color:#1D9E75">4.6j</span>
+            </div>
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Pairs</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:74%;background:#d1d5db"></div></div>
+              <span class="cmp-val" style="color:#6b7280">3.4j</span>
+            </div>
+          </div>
+        </div>
+        <div class="cmp-item">
+          <div class="cmp-label">% Clients Business <span>Moi 5% · Pairs 13%</span></div>
+          <div class="cmp-bars">
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Moi</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:38%;background:#f59e0b"></div></div>
+              <span class="cmp-val" style="color:#f59e0b">5%</span>
+            </div>
+            <div class="cmp-bar-row">
+              <span class="cmp-bar-label">Pairs</span>
+              <div class="cmp-track"><div class="cmp-fill" style="width:100%;background:#d1d5db"></div></div>
+              <span class="cmp-val" style="color:#6b7280">13%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Pace report — Réservations futures</div>
+      <div class="card-sub">Nuits confirmées May–Dec 2026 vs même période N-1</div>
+      <canvas id="paceChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="insights-grid">
+    <div class="insight">
+      <div class="ins-icon">🔴</div>
+      <div class="ins-title">Crise d'annulations</div>
+      <div class="ins-num">×6.5</div>
+      <div class="ins-text">52% d'annulations vs 8% pour les concurrents. Les réservations à 90+ jours s'annulent à 81.6%. Cause : politique 100% remboursable = réservations spéculatives sans engagement.</div>
+      <div class="ins-action">→ Tarif non-remboursable obligatoire > 30 jours</div>
+    </div>
+    <div class="insight">
+      <div class="ins-icon">🌍</div>
+      <div class="ins-title">Choc géopolitique externe</div>
+      <div class="ins-num">−78%</div>
+      <div class="ins-text">L'effondrement des réservations futures (AED 5 472 vs 24 934) est lié au conflit Iran 2025-2026 qui a paralysé le tourisme dans la région. Facteur non contrôlable — mais qui impose une adaptation stratégique immédiate de la cible client.</div>
+      <div class="ins-action">→ Pivoter vers résidents locaux + expatriés long séjour</div>
+    </div>
+    <div class="insight">
+      <div class="ins-icon">💼</div>
+      <div class="ins-title">Segment Business = gold</div>
+      <div class="ins-num">AED 260</div>
+      <div class="ins-text">Tes clients business paient AED 260/nuit (+39% vs concurrents à 187). Mais ils ne représentent que 5% de tes réservations contre 13% pour tes pairs. Énorme potentiel inexploité.</div>
+      <div class="ins-action">→ Inscrire sur Booking for Business / Expedia Business</div>
+    </div>
+    <div class="insight">
+      <div class="ins-icon">📋</div>
+      <div class="ins-title">Weekly Rate = frein</div>
+      <div class="ins-num">86%</div>
+      <div class="ins-text">86% de tes nuits vendues via le Weekly Rate à AED 182/nuit. Le Standard Rate rapporte AED 226/nuit (+24%) et le Non-remboursable AED 219/nuit. Tu te sous-paies.</div>
+      <div class="ins-action">→ Réduire disponibilité Weekly Rate, booster Standard</div>
+    </div>
+    <div class="insight">
+      <div class="ins-icon">🟢</div>
+      <div class="ins-title">Durée séjour = atout</div>
+      <div class="ins-num">+35%</div>
+      <div class="ins-text">Tes clients restent 4.58 nuits en moyenne vs 3.4 pour les pairs (+35%). C'est un avantage concurrentiel réel : moins de frictions, moins de ménage, plus de revenus par client.</div>
+      <div class="ins-action">→ Créer offre "Long séjour 7+ nuits" avec -5% visible</div>
+    </div>
+    <div class="insight">
+      <div class="ins-icon">💰</div>
+      <div class="ins-title">Potentiel identifié</div>
+      <div class="ins-num">AED 31K</div>
+      <div class="ins-text">En réduisant le taux d'annulation à 20% et en alignant l'ADR sur les pairs : +AED 28 067 (annulations converties) + AED 3 514 (hausse ADR) = AED 31 580/an supplémentaires.</div>
+      <div class="ins-action">≈ €7 900 EUR de revenus additionnels annuels</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Dashboard by <a href="https://linkedin.com/in/samir-bouziane-117172409">Bouziane Samir</a> ·
+  Données propriétaires Booking.com · Sharjah, UAE · Stack : Python · Chart.js
+</footer>
+
+<script>
+const G = '#1D9E75', R = '#E24B4A', O = '#f59e0b', MUT = '#9ca3af';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.color = '#6b7280';
+
+// Revenue vs N-1
+new Chart(document.getElementById('revenueChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Nov-25','Déc-25','Jan-26','Fév-26','Mar-26','Avr-26','Mai-26'],
+    datasets: [
+      { label: 'Revenue 2025-26 (AED)', data: [5241.60,2273.10,5745.10,4881.00,3287.00,0,0],
+        backgroundColor: G+'cc', borderRadius: 5, borderSkipped: false },
+      { label: 'Revenue N-1 (AED)', data: [5381.35,4066.40,4327.08,5171.40,4110.60,6011.20,2187.90],
+        backgroundColor: MUT+'55', borderRadius: 5, borderSkipped: false },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: '#f3f4f6' }, ticks: { callback: v => 'AED '+(v/1000).toFixed(1)+'K' } }
+    }
+  }
+});
+
+// Cancel monthly
+new Chart(document.getElementById('cancelMonthChart'), {
+  type: 'line',
+  data: {
+    labels: ['Mai-25','Jui-25','Jul-25','Aoû-25','Sep-25','Oct-25','Nov-25','Déc-25','Jan-26','Fév-26','Mar-26'],
+    datasets: [{
+      label: 'Taux annulation (%)',
+      data: [37.5,33.3,40,57.1,42.9,71.4,66.7,56.3,44.4,42.9,100],
+      borderColor: R, backgroundColor: R+'20', fill: true,
+      tension: .4, pointRadius: 4, pointBackgroundColor: R
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+      y: { min: 0, max: 110, grid: { color: '#f3f4f6' }, ticks: { callback: v => v+'%' } }
+    }
+  }
+});
+
+// Cancel by window
+new Chart(document.getElementById('cancelWindowChart'), {
+  type: 'bar',
+  data: {
+    labels: ['0-1j','2-3j','4-7j','8-14j','15-30j','31-60j','61-90j','90+j'],
+    datasets: [
+      { label: 'Annulé (%)', data: [0,0,25,40,25,71.4,25,81.6],
+        backgroundColor: R+'cc', borderRadius: 4, borderSkipped: false },
+      { label: 'Séjour réalisé (%)', data: [100,100,75,60,75,28.6,75,18.4],
+        backgroundColor: G+'66', borderRadius: 4, borderSkipped: false }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } },
+    scales: {
+      x: { stacked: true, grid: { display: false } },
+      y: { stacked: true, ticks: { callback: v => v+'%' }, grid: { color: '#f3f4f6' } }
+    }
+  }
+});
+
+// ADR by window
+new Chart(document.getElementById('adrWindowChart'), {
+  type: 'bar',
+  data: {
+    labels: ['0-1j','2-3j','4-7j','8-14j','15-30j','31-60j','61-90j','90+j'],
+    datasets: [{
+      label: 'ADR (AED)',
+      data: [195.74,176.57,189.43,170.85,181,185.30,185.75,211.12],
+      backgroundColor: (ctx) => ctx.dataIndex === 7 ? G : ctx.dataIndex === 0 ? O+'cc' : '#93c5fd',
+      borderRadius: 4, borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { min: 160, grid: { color: '#f3f4f6' }, ticks: { callback: v => 'AED '+v } }
+    }
+  }
+});
+
+// Rate plan donut
+new Chart(document.getElementById('ratePlanChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Weekly Rate (AED 182)', 'Standard Rate (AED 226)', 'Non-remboursable (AED 219)'],
+    datasets: [{
+      data: [201,18,14],
+      backgroundColor: [R+'cc', G, O],
+      borderWidth: 0, hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, cutout: '65%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 12, boxWidth: 10, font: { size: 10 } } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} nuits` } }
+    }
+  }
+});
+
+// Pace report
+new Chart(document.getElementById('paceChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Mai-26','Jun-26','Jul-26','Aoû-26','Sep-26','Oct-26','Nov-26','Déc-26'],
+    datasets: [
+      { label: '2026 (confirmé)', data: [0,0,3,0,0,0,4,20],
+        backgroundColor: G+'cc', borderRadius: 4, borderSkipped: false },
+      { label: '2025 (même période)', data: [5,13,30,21,0,16,9,122],
+        backgroundColor: MUT+'55', borderRadius: 4, borderSkipped: false }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: '#f3f4f6' }, ticks: { stepSize: 10 } }
+    }
+  }
+});
+</script>
+</body>
+</html>
