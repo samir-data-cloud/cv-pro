@@ -268,12 +268,28 @@ footer p{font-size:.76rem}
 .svc-list li{font-size:.78rem;color:#777;padding-left:1.1rem;position:relative;line-height:1.5}
 .svc-list li::before{content:'→';position:absolute;left:0;color:#1D9E75;font-size:.72rem;top:.05rem}
 .svc-featured .svc-list li{color:rgba(255,255,255,.4)}
-.svc-footer{border-top:1px solid rgba(0,0,0,.07);padding-top:.875rem;margin-top:.25rem}
+.svc-footer{border-top:1px solid rgba(0,0,0,.07);padding-top:.875rem;margin-top:.25rem;display:flex;justify-content:space-between;align-items:center;gap:.4rem;flex-wrap:wrap}
 .svc-featured .svc-footer{border-color:rgba(255,255,255,.08)}
 .svc-delay{font-size:.7rem;color:#aaa;letter-spacing:.02em}
 .svc-featured .svc-delay{color:rgba(255,255,255,.3)}
+.svc-price{font-size:.76rem;font-weight:700;color:#1D9E75;white-space:nowrap}
+.svc-featured .svc-price{color:#1D9E75}
 .services-cta{text-align:center;display:flex;flex-direction:column;align-items:center;gap:.875rem}
 .svc-cta-note{font-size:.75rem;color:#aaa;letter-spacing:.03em}
+
+/* HERO CASE TEASER */
+.hero-case-teaser{display:block;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:.875rem 1.1rem;margin-bottom:1.5rem;text-decoration:none;transition:all .25s}
+.hero-case-teaser:hover{border-color:#1D9E75;transform:translateY(-2px);box-shadow:0 8px 24px rgba(29,158,117,.08)}
+.hct-label{font-size:.62rem;color:#1D9E75;letter-spacing:.07em;text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:.35rem;margin-bottom:.3rem}
+.hct-title{font-size:.84rem;font-weight:600;color:#1a1a18;margin-bottom:.45rem;line-height:1.35}
+.hct-stats{display:flex;gap:1.1rem;flex-wrap:wrap;margin-bottom:.45rem}
+.hct-stat{display:flex;flex-direction:column;gap:.05rem}
+.hct-stat strong{font-size:.82rem;font-weight:700;color:#1a1a18;letter-spacing:-.02em}
+.hct-stat span{font-size:.62rem;color:#aaa}
+.hct-cta{font-size:.68rem;color:#1D9E75;font-weight:600;letter-spacing:.02em}
+
+/* PROJ DATE */
+.proj-date{font-size:.65rem;color:#bbb;letter-spacing:.04em;margin-top:.35rem;display:block}
 
 /* STATS CAROUSEL */
 .stats-carousel-wrap{width:100%}
