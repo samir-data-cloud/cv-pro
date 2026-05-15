@@ -224,7 +224,12 @@ footer p{font-size:.76rem}
 .fade-up{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
 .fade-up.visible{opacity:1;transform:none}
 
-/* CASE STUDY */
+/* CASE STUDY SECTION */
+.casestudy{background:#f5f4f0}
+.cs-hdr{margin-bottom:3rem}
+.cs-hdr-sub{font-size:.9rem;color:#666;margin-top:.875rem;line-height:1.75;max-width:560px}
+
+/* CASE STUDY STEPS */
 .tag-real{background:#f0fdf4;border-color:#bbf7d0;color:#16a34a;font-weight:500}
 .cs-steps{display:flex;flex-direction:column;margin-top:1.5rem}
 .cs-step{display:flex;gap:1rem;padding:.875rem 0;border-bottom:1px solid rgba(0,0,0,.06);align-items:flex-start}
