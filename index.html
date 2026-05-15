@@ -751,30 +751,61 @@
 
     // STATS CAROUSEL (mobile)
     (function () {
-      const track = document.getElementById('statsTrack');
-      const wrap = track ? track.parentElement : null;
-      const dots = document.querySelectorAll('#statsDots .stats-dot');
-      let idx = 0, timer, startX = 0;
+      var wrap = document.querySelector('.stats-carousel-wrap');
+      var track = document.getElementById('statsTrack');
+      var items = track ? Array.from(track.querySelectorAll('.hstat')) : [];
+      var dots = Array.from(document.querySelectorAll('#statsDots .stats-dot'));
+      var idx = 0, timer, startX = 0;
+      if (!wrap || !track || items.length === 0) return;
+
       function isMobile() { return window.innerWidth <= 600; }
-      function go(i) {
-        if (!isMobile()) return;
-        idx = (i + 3) % 3;
-        const itemW = wrap.offsetWidth;
-        track.style.transform = `translateX(-${idx * itemW}px)`;
-        dots.forEach((d, j) => d.classList.toggle('active', j === idx));
+
+      function applyWidths() {
+        var w = wrap.offsetWidth;
+        items.forEach(function (item) { item.style.width = w + 'px'; });
       }
-      function startTimer() { timer = setInterval(() => go(idx + 1), 2500); }
-      function stopTimer() { clearInterval(timer); }
-      if (!track) return;
-      dots.forEach((d, i) => d.addEventListener('click', () => { stopTimer(); go(i); startTimer(); }));
-      track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; stopTimer(); }, { passive: true });
-      track.addEventListener('touchend', e => {
-        const diff = startX - e.changedTouches[0].clientX;
+
+      function slide() {
+        track.style.transform = 'translateX(-' + (idx * wrap.offsetWidth) + 'px)';
+        dots.forEach(function (d, j) { d.classList.toggle('active', j === idx); });
+      }
+
+      function go(i) {
+        idx = ((i % items.length) + items.length) % items.length;
+        applyWidths();
+        slide();
+      }
+
+      function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(function () { if (isMobile()) go(idx + 1); }, 2500);
+      }
+
+      function init() {
+        if (isMobile()) {
+          applyWidths();
+          slide();
+          startTimer();
+        } else {
+          clearInterval(timer);
+          items.forEach(function (item) { item.style.width = ''; });
+          track.style.transform = '';
+          idx = 0;
+        }
+      }
+
+      dots.forEach(function (d, i) {
+        d.addEventListener('click', function () { clearInterval(timer); go(i); startTimer(); });
+      });
+      track.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; clearInterval(timer); }, { passive: true });
+      track.addEventListener('touchend', function (e) {
+        var diff = startX - e.changedTouches[0].clientX;
         if (Math.abs(diff) > 40) go(idx + (diff > 0 ? 1 : -1));
         startTimer();
       }, { passive: true });
-      window.addEventListener('resize', () => { if (!isMobile()) { track.style.transform = ''; idx = 0; } });
-      startTimer();
+      window.addEventListener('resize', init);
+      window.addEventListener('load', init);
+      init();
     })();
 
     // TESTIMONIALS CAROUSEL

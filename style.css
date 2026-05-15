@@ -322,8 +322,8 @@ footer p{font-size:.76rem}
   .hero-actions{flex-wrap:wrap}
   .hero-actions .btn{flex:1;min-width:140px;justify-content:center}
   .stats-carousel-wrap{overflow:hidden}
-  .hero-stats-row{gap:0;border:none;padding:0;flex-wrap:nowrap;transition:transform .42s cubic-bezier(.4,0,.2,1)}
-  .hstat{min-width:100%;padding:1.5rem 0;border-top:1px solid rgba(0,0,0,.07);border-bottom:1px solid rgba(0,0,0,.07);text-align:center;flex-shrink:0}
+  .hero-stats-row{gap:0;border:none;padding:0;display:flex;flex-wrap:nowrap;transition:transform .42s cubic-bezier(.4,0,.2,1);will-change:transform}
+  .hstat{flex-shrink:0;padding:1.5rem 0;border-top:1px solid rgba(0,0,0,.07);border-bottom:1px solid rgba(0,0,0,.07);text-align:center}
   .stats-dots{display:flex}
   .skills-grid,.more-grid{grid-template-columns:1fr}
   .hero-photo-card{width:100%}
