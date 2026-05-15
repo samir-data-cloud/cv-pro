@@ -752,16 +752,20 @@
     // STATS CAROUSEL (mobile)
     (function () {
       const track = document.getElementById('statsTrack');
+      const wrap = track ? track.parentElement : null;
       const dots = document.querySelectorAll('#statsDots .stats-dot');
       let idx = 0, timer, startX = 0;
+      function isMobile() { return window.innerWidth <= 600; }
       function go(i) {
-        if (window.innerWidth > 600) return;
+        if (!isMobile()) return;
         idx = (i + 3) % 3;
-        track.style.transform = `translateX(-${idx * 100}%)`;
+        const itemW = wrap.offsetWidth;
+        track.style.transform = `translateX(-${idx * itemW}px)`;
         dots.forEach((d, j) => d.classList.toggle('active', j === idx));
       }
       function startTimer() { timer = setInterval(() => go(idx + 1), 2500); }
       function stopTimer() { clearInterval(timer); }
+      if (!track) return;
       dots.forEach((d, i) => d.addEventListener('click', () => { stopTimer(); go(i); startTimer(); }));
       track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; stopTimer(); }, { passive: true });
       track.addEventListener('touchend', e => {
@@ -769,6 +773,7 @@
         if (Math.abs(diff) > 40) go(idx + (diff > 0 ? 1 : -1));
         startTimer();
       }, { passive: true });
+      window.addEventListener('resize', () => { if (!isMobile()) { track.style.transform = ''; idx = 0; } });
       startTimer();
     })();
 
