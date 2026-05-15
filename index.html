@@ -19,12 +19,15 @@
   <!-- NAV -->
   <nav id="nav">
     <a href="#home" class="nav-logo">BS<span>.</span></a>
-    <ul class="nav-links">
+    <ul class="nav-links" id="navLinks">
       <li><a href="#about">À propos</a></li>
       <li><a href="#skills">Compétences</a></li>
       <li><a href="#projects">Projets</a></li>
       <li><a href="#contact" class="nav-cta">Contact</a></li>
     </ul>
+    <button class="nav-burger" id="navBurger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
   <!-- HERO -->
@@ -42,13 +45,20 @@
           cachent de <em>l'argent.</em>
         </h1>
         <p class="hero-role">— Je le trouve. Et je vous dis exactement quoi faire.</p>
-        <div class="hero-stats-row">
-          <div class="hstat"><span class="hstat-n">-$156K</span><span class="hstat-l">Pertes détectées client</span></div>
-          <div class="hstat"><span class="hstat-n">+€17K</span><span class="hstat-l">Potentiel identifié</span></div>
-          <div class="hstat"><span class="hstat-n">5</span><span class="hstat-l">Analyses livrées</span></div>
+        <div class="stats-carousel-wrap">
+          <div class="hero-stats-row" id="statsTrack">
+            <div class="hstat"><span class="hstat-n">-$156K</span><span class="hstat-l">Pertes détectées client</span></div>
+            <div class="hstat"><span class="hstat-n">+€17K</span><span class="hstat-l">Potentiel identifié</span></div>
+            <div class="hstat"><span class="hstat-n">5</span><span class="hstat-l">Analyses livrées</span></div>
+          </div>
+          <div class="stats-dots" id="statsDots">
+            <span class="stats-dot active"></span>
+            <span class="stats-dot"></span>
+            <span class="stats-dot"></span>
+          </div>
         </div>
         <div class="hero-actions">
-          <a href="#contact" class="btn btn-dark">Travailler ensemble ↗</a>
+          <a href="#contact" class="btn btn-dark">Travaillons ensemble ↗</a>
           <a href="#projects" class="btn btn-outline">Voir mes résultats</a>
           <a href="cv.html" class="btn btn-cv">CV ↓</a>
         </div>
@@ -601,6 +611,43 @@
       el.querySelectorAll('.sk-fill').forEach(b => { b.style.width = '0%' });
       obs.observe(el);
     });
+
+    // HAMBURGER MENU
+    (function () {
+      const burger = document.getElementById('navBurger');
+      const links = document.getElementById('navLinks');
+      burger.addEventListener('click', () => {
+        links.classList.toggle('open');
+        burger.classList.toggle('open');
+      });
+      links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        links.classList.remove('open');
+        burger.classList.remove('open');
+      }));
+    })();
+
+    // STATS CAROUSEL (mobile)
+    (function () {
+      const track = document.getElementById('statsTrack');
+      const dots = document.querySelectorAll('#statsDots .stats-dot');
+      let idx = 0, timer, startX = 0;
+      function go(i) {
+        if (window.innerWidth > 600) return;
+        idx = (i + 3) % 3;
+        track.style.transform = `translateX(-${idx * 100}%)`;
+        dots.forEach((d, j) => d.classList.toggle('active', j === idx));
+      }
+      function startTimer() { timer = setInterval(() => go(idx + 1), 2500); }
+      function stopTimer() { clearInterval(timer); }
+      dots.forEach((d, i) => d.addEventListener('click', () => { stopTimer(); go(i); startTimer(); }));
+      track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; stopTimer(); }, { passive: true });
+      track.addEventListener('touchend', e => {
+        const diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) go(idx + (diff > 0 ? 1 : -1));
+        startTimer();
+      }, { passive: true });
+      startTimer();
+    })();
 
     // TESTIMONIALS CAROUSEL
     let testiCurrent = 0;
